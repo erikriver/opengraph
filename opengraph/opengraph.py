@@ -6,6 +6,8 @@ import json
 from BeautifulSoup import BeautifulSoup
 
 class OpenGraph(dict):
+    """
+    """
     def __init__(self, url=None, html=None, **kwargs):
         for k in kwargs.keys():
             self[k] = kwargs[k]
@@ -25,12 +27,15 @@ class OpenGraph(dict):
         return self[name]
             
     def fetch(self, url):
+        """
+        """
         raw = urllib2.urlopen(url)
         html = raw.read()
         return self.parser(html)
         
     def parser(self, html):
-        
+        """
+        """
         doc = BeautifulSoup(html)
         ogs = doc.html.head.findAll(property=re.compile(r'^og'))
         for og in ogs:
@@ -41,18 +46,25 @@ class OpenGraph(dict):
             hasattr(self,'type')  and  \
             hasattr(self,'image') and  \
             hasattr(self,'url'):
+            
             return True
         
     def to_html(self):
+        if not self.is_valid():
+            return u"<meta property=\"og:error\" content=\"og metadata is not valid\" />"
+            
         meta = u""
         for key,value in self.iteritems():
-            meta += "\n<meta property=\"og:%s\" content=\"%s\" />" %(key, value)
-        meta += "\n"
+            meta += u"\n<meta property=\"og:%s\" content=\"%s\" />" %(key, value)
+        meta += u"\n"
+        
         return meta
         
     def to_json(self):
         # TODO: force unicode
-        # json.dumps(dict((k, map(unicode, v)) for (k,v) in self.iteritems()))
+        if not self.is_valid():
+            return json.dumps({'error':'og metadata is not valid'})
+            
         return json.dumps(self)
         
     def to_xml(self):

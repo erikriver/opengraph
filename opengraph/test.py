@@ -13,7 +13,6 @@ HTML = """
 <meta property="og:url" content="http://www.imdb.com/title/tt0117500/" />
 <meta property="og:image" content="http://ia.media-imdb.com/images/rock.jpg" />
 </head>
-
 </html>
 """
 
