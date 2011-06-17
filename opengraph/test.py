@@ -21,7 +21,7 @@ class test(unittest.TestCase):
 		
     def test_url(self):
         data = opengraph.OpenGraph(url='http://vimeo.com/896837')
-        self.assertEqual(data.is_valid(),True)
+        self.assertEqual(data['url'], 'http://vimeo.com/896837')
         
     def test_isinstace(self):
         data = opengraph.OpenGraph()
