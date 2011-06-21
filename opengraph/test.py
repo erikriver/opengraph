@@ -34,6 +34,11 @@ class test(unittest.TestCase):
         og = opengraph.OpenGraph(url='http://www.youtube.com/watch?v=XAyNT2bTFuI')
         self.assertTrue(og.to_json())
         self.assertTrue(isinstance(og.to_json(),str))
+
+    def test_no_json(self):
+        opengraph.import_json = False
+        og = opengraph.OpenGraph(url='http://grooveshark.com')
+        self.assertEqual(og.to_json(),"{'error':'there isn't json module'}")
         
     def test_is_valid(self):
         og = opengraph.OpenGraph(url='http://grooveshark.com')

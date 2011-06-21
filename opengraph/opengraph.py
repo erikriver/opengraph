@@ -2,8 +2,14 @@
 
 import re
 import urllib2
-import json
 from BeautifulSoup import BeautifulSoup
+
+global import_json
+try:
+    import json
+    import_json = True
+except ImportError:
+    import_json = False
 
 class OpenGraph(dict):
     """
@@ -36,7 +42,10 @@ class OpenGraph(dict):
     def parser(self, html):
         """
         """
-        doc = BeautifulSoup(html)
+        if not isinstance(html,BeautifulSoup):
+            doc = BeautifulSoup(html)
+        else:
+            doc = html
         ogs = doc.html.head.findAll(property=re.compile(r'^og'))
         for og in ogs:
             self[og[u'property'][3:]]=og[u'content']
@@ -62,6 +71,10 @@ class OpenGraph(dict):
         
     def to_json(self):
         # TODO: force unicode
+        global import_json
+        if not import_json:
+            return "{'error':'there isn't json module'}"
+
         if not self.is_valid():
             return json.dumps({'error':'og metadata is not valid'})
             
