@@ -23,7 +23,7 @@ setup(name='opengraph',
       include_package_data=True,
       zip_safe=False,
       install_requires=[
-          'BeautifulSoup'
+          'beautifulsoup4'
       ],
       entry_points="""
       # -*- Entry points: -*-
