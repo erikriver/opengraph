@@ -2,7 +2,10 @@
 
 import re
 import urllib2
-from BeautifulSoup import BeautifulSoup
+try:
+    from bs4 import BeautifulSoup
+except ImportError:
+    from BeautifulSoup import BeautifulSoup
 
 global import_json
 try:
