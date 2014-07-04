@@ -90,18 +90,20 @@ class OpenGraph(dict):
             if self.scrape and not self.is_valid():
                 for attr in self.providers.get(
                     self.provider, {}
-                ).get('required_attrs'):
+                ).get('required_attrs', []):
                     if not hasattr(self, attr):
                         try:
                             self[attr] = getattr(self, 'scrape_%s' % attr)(doc)
                         except AttributeError:
                             pass
+        else:
+            self.provider = 'og'
 
     def is_valid(self):
         return all([
             hasattr(self, attr) for attr in self.providers.get(
                 self.provider, {}
-            ).get('required_attrs')
+            ).get('required_attrs', [])
         ])
 
     def to_html(self):
