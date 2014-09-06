@@ -1,7 +1,11 @@
 # encoding: utf-8
 
 import re
-import urllib2
+try:
+    from urllib2 import urlopen
+except ImportError:
+    from urllib.request import urlopen
+
 try:
     from bs4 import BeautifulSoup
 except ImportError:
@@ -13,6 +17,11 @@ try:
     import_json = True
 except ImportError:
     import_json = False
+
+try:
+    iteritems = dict.iteritems
+except AttributeError:
+    iteritems = dict.items
 
 class OpenGraph(dict):
     """
@@ -29,12 +38,12 @@ class OpenGraph(dict):
 
         for k in kwargs.keys():
             self[k] = kwargs[k]
-        
+
         dict.__init__(self)
-                
+
         if url is not None:
             self.fetch(url)
-            
+
         if html is not None:
             self.parser(html)
 
@@ -43,14 +52,14 @@ class OpenGraph(dict):
 
     def __getattr__(self, name):
         return self[name]
-            
+
     def fetch(self, url):
         """
         """
-        raw = urllib2.urlopen(url)
+        raw = urlopen(url)
         html = raw.read()
         return self.parser(html)
-        
+
     def parser(self, html):
         """
         """
@@ -70,21 +79,21 @@ class OpenGraph(dict):
                         self[attr] = getattr(self, 'scrape_%s' % attr)(doc)
                     except AttributeError:
                         pass
-        
+
     def is_valid(self):
         return all([hasattr(self, attr) for attr in self.required_attrs])
-        
+
     def to_html(self):
         if not self.is_valid():
             return u"<meta property=\"og:error\" content=\"og metadata is not valid\" />"
-            
+
         meta = u""
-        for key,value in self.iteritems():
+        for key,value in iteritems(self):
             meta += u"\n<meta property=\"og:%s\" content=\"%s\" />" %(key, value)
         meta += u"\n"
-        
+
         return meta
-        
+
     def to_json(self):
         # TODO: force unicode
         global import_json
@@ -93,14 +102,14 @@ class OpenGraph(dict):
 
         if not self.is_valid():
             return json.dumps({'error':'og metadata is not valid'})
-            
+
         return json.dumps(self)
-        
+
     def to_xml(self):
         pass
 
     def scrape_image(self, doc):
-        images = [dict(img.attrs)['src'] 
+        images = [dict(img.attrs)['src']
             for img in doc.html.body.findAll('img')]
 
         if images:
