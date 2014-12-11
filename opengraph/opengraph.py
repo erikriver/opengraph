@@ -18,7 +18,7 @@ class OpenGraph(dict):
     """
     """
 
-    required_attrs = ['title', 'type', 'image', 'url']
+    required_attrs = ['title', 'type', 'image', 'url', 'description']
 
     def __init__(self, url=None, html=None, scrape=False, **kwargs):
         # If scrape == True, then will try to fetch missing attribtues
@@ -65,14 +65,17 @@ class OpenGraph(dict):
         # Couldn't fetch all attrs from og tags, try scraping body
         if not self.is_valid() and self.scrape:
             for attr in self.required_attrs:
-                if not hasattr(self, attr):
+                if not self.valid_attr(attr):
                     try:
                         self[attr] = getattr(self, 'scrape_%s' % attr)(doc)
                     except AttributeError:
                         pass
-        
+
+    def valid_attr(self, attr):
+        return hasattr(self, attr) and len(self[attr]) > 0
+
     def is_valid(self):
-        return all([hasattr(self, attr) for attr in self.required_attrs])
+        return all([self.valid_attr(attr) for attr in self.required_attrs])
         
     def to_html(self):
         if not self.is_valid():
@@ -100,7 +103,7 @@ class OpenGraph(dict):
         pass
 
     def scrape_image(self, doc):
-        images = [dict(img.attrs)['src'] 
+        images = [dict(img.attrs)['src']
             for img in doc.html.body.findAll('img')]
 
         if images:
@@ -116,3 +119,8 @@ class OpenGraph(dict):
 
     def scrape_url(self, doc):
         return self._url
+
+    def scrape_description(self, doc):
+        tag = doc.html.head.findAll('meta', attrs={"name":"description"})
+        result = "".join([t['content'] for t in tag])
+        return result

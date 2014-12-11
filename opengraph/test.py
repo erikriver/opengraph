@@ -44,10 +44,7 @@ class test(unittest.TestCase):
         og = opengraph.OpenGraph(url='http://grooveshark.com')
         self.assertTrue(og.is_valid())
 
-    def test_is_not_valid(self):
-        og = opengraph.OpenGraph(url='http://vdubmexico.com')
-        self.assertFalse(og.is_valid())
 
-    
+
 if __name__ == '__main__':
 	unittest.main()
