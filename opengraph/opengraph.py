@@ -7,13 +7,6 @@ try:
 except ImportError:
     from BeautifulSoup import BeautifulSoup
 
-global import_json
-try:
-    import json
-    import_json = True
-except ImportError:
-    import_json = False
-
 class OpenGraph(dict):
     """
     """
@@ -87,20 +80,6 @@ class OpenGraph(dict):
         meta += u"\n"
         
         return meta
-        
-    def to_json(self):
-        # TODO: force unicode
-        global import_json
-        if not import_json:
-            return "{'error':'there isn't json module'}"
-
-        if not self.is_valid():
-            return json.dumps({'error':'og metadata is not valid'})
-            
-        return json.dumps(self)
-        
-    def to_xml(self):
-        pass
 
     def scrape_image(self, doc):
         images = [dict(img.attrs)['src']
