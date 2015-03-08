@@ -55,7 +55,7 @@ class OpenGraph(dict):
     def __getattr__(self, name):
         try:
             return self[name]
-        except KeyError:
+        except KeyError: # hasattr expects AttributeError
             raise AttributeError
 
     def fetch(self, url):
