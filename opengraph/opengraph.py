@@ -51,7 +51,10 @@ class OpenGraph(dict):
         self[name] = val
 
     def __getattr__(self, name):
-        return self[name]
+        try:
+            return self[name]
+        except KeyError:
+            raise AttributeError
 
     def fetch(self, url):
         """
