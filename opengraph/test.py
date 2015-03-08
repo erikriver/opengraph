@@ -16,6 +16,26 @@ HTML = """
 </html>
 """
 
+SCRAPE_HTML = """
+<html>
+    <head>
+        <title>some cool title</title>
+        <meta name="description" content="some cool description">
+    </head>
+    <body>
+    <img src="cool-image.jpg" />
+    </body>
+</html>
+"""
+
+SCRAPE_HTML_WITHOUT_DESCRIPTION = """
+<html>
+    <head>
+        <title>some cool title</title>
+    </head>
+</html>
+"""
+
 class test(unittest.TestCase):
 		
     def test_url(self):
@@ -48,6 +68,14 @@ class test(unittest.TestCase):
         og = opengraph.OpenGraph(url='http://vdubmexico.com')
         self.assertFalse(og.is_valid())
 
-    
+    def test_scraping_title_and_description(self):
+        data = opengraph.OpenGraph(html=SCRAPE_HTML, scrape=True)
+        self.assertEqual(data['title'], 'some cool title')
+        self.assertEqual(data['description'], 'some cool description')
+        self.assertEqual(data['image'], 'cool-image.jpg')
+
+    def test_scraping_doesnt_fail_when_description_is_missing(self):
+        data = opengraph.OpenGraph(html=SCRAPE_HTML_WITHOUT_DESCRIPTION, scrape=True)
+
 if __name__ == '__main__':
 	unittest.main()
