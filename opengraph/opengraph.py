@@ -2,9 +2,9 @@
 
 import re
 try:
-    from urllib2 import urlopen
+    from urllib2 import urlopen, HTTPCookieProcessor, build_opener
 except ImportError:
-    from urllib.request import urlopen
+    from urllib.request import urlopen, HTTPCookieProcessor, build_opener
 
 try:
     from bs4 import BeautifulSoup
@@ -61,7 +61,7 @@ class OpenGraph(dict):
     def fetch(self, url):
         """
         """
-        raw = urlopen(url)
+        raw = build_opener(HTTPCookieProcessor).open(url)
         html = raw.read()
         return self.parser(html)
 
