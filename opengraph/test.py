@@ -16,16 +16,44 @@ HTML = """
 </html>
 """
 
+HTML_OG_NOT_VALID = """
+<html xmlns:og="http://ogp.me/ns#">
+<head>
+<title>The Rock (1996)</title>
+</head>
+</html>
+"""
+
+SCRAPE_HTML = """
+<html>
+    <head>
+        <title>some cool title</title>
+        <meta name="description" content="some cool description">
+    </head>
+    <body>
+    <img src="cool-image.jpg" />
+    </body>
+</html>
+"""
+
+SCRAPE_HTML_WITHOUT_DESCRIPTION = """
+<html>
+    <head>
+        <title>some cool title</title>
+    </head>
+</html>
+"""
+
 class test(unittest.TestCase):
-		
+
     def test_url(self):
-        data = opengraph.OpenGraph(url='http://vimeo.com/896837')
-        self.assertEqual(data['url'], 'http://vimeo.com/896837')
-        
+        data = opengraph.OpenGraph(url='https://vimeo.com/896837')
+        self.assertEqual(data['url'], 'https://vimeo.com/896837')
+
     def test_isinstace(self):
         data = opengraph.OpenGraph()
         self.assertTrue(isinstance(data,dict))
-        
+
     def test_to_html(self):
         og = opengraph.OpenGraph(html=HTML)
         self.assertTrue(og.to_html())
@@ -39,15 +67,23 @@ class test(unittest.TestCase):
         opengraph.import_json = False
         og = opengraph.OpenGraph(url='http://grooveshark.com')
         self.assertEqual(og.to_json(),"{'error':'there isn't json module'}")
-        
+
     def test_is_valid(self):
         og = opengraph.OpenGraph(url='http://grooveshark.com')
         self.assertTrue(og.is_valid())
 
     def test_is_not_valid(self):
-        og = opengraph.OpenGraph(url='http://vdubmexico.com')
+        og = opengraph.OpenGraph(html=HTML_OG_NOT_VALID)
         self.assertFalse(og.is_valid())
 
-    
+    def test_scraping_title_and_description(self):
+        data = opengraph.OpenGraph(html=SCRAPE_HTML, scrape=True)
+        self.assertEqual(data['title'], 'some cool title')
+        self.assertEqual(data['description'], 'some cool description')
+        self.assertEqual(data['image'], 'cool-image.jpg')
+
+    def test_scraping_doesnt_fail_when_description_is_missing(self):
+        data = opengraph.OpenGraph(html=SCRAPE_HTML_WITHOUT_DESCRIPTION, scrape=True)
+
 if __name__ == '__main__':
 	unittest.main()

@@ -2,9 +2,9 @@
 
 import re
 try:
-    from urllib2 import urlopen
+    from urllib2 import urlopen, HTTPCookieProcessor, build_opener
 except ImportError:
-    from urllib.request import urlopen
+    from urllib.request import urlopen, HTTPCookieProcessor, build_opener
 
 try:
     from bs4 import BeautifulSoup
@@ -28,6 +28,8 @@ class OpenGraph(dict):
     """
 
     required_attrs = ['title', 'type', 'image', 'url']
+    scrape_list = required_attrs.copy()
+    scrape_list.append('description')
 
     def __init__(self, url=None, html=None, scrape=False, **kwargs):
         # If scrape == True, then will try to fetch missing attribtues
@@ -51,12 +53,15 @@ class OpenGraph(dict):
         self[name] = val
 
     def __getattr__(self, name):
-        return self[name]
+        try:
+            return self[name]
+        except KeyError: # hasattr expects AttributeError
+            raise AttributeError
 
     def fetch(self, url):
         """
         """
-        raw = urlopen(url)
+        raw = build_opener(HTTPCookieProcessor).open(url)
         html = raw.read()
         return self.parser(html)
 
@@ -73,7 +78,7 @@ class OpenGraph(dict):
                 self[og[u'property'][3:]]=og[u'content']
         # Couldn't fetch all attrs from og tags, try scraping body
         if not self.is_valid() and self.scrape:
-            for attr in self.required_attrs:
+            for attr in self.scrape_list:
                 if not hasattr(self, attr):
                     try:
                         self[attr] = getattr(self, 'scrape_%s' % attr)(doc)
@@ -119,6 +124,13 @@ class OpenGraph(dict):
 
     def scrape_title(self, doc):
         return doc.html.head.title.text
+
+    def scrape_description(self, doc):
+        description = doc.html.head.find('meta', {'name':'description'})
+        if description:
+            return description['content'];
+        else:
+            return None
 
     def scrape_type(self, doc):
         return 'other'
