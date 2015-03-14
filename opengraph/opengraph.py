@@ -20,11 +20,13 @@ class OpenGraph(dict):
 
     required_attrs = ['title', 'type', 'image', 'url', 'description']
 
-    def __init__(self, url=None, html=None, scrape=False, **kwargs):
+    def __init__(self, url=None, html=None, scrape=False, timeout=None, **kwargs):
         # If scrape == True, then will try to fetch missing attribtues
         # from the page's body
+        # timeout for urllib2 (sec.)
 
         self.scrape = scrape
+        self.timeout = timeout
         self._url = url
 
         for k in kwargs.keys():
@@ -47,7 +49,10 @@ class OpenGraph(dict):
     def fetch(self, url):
         """
         """
-        raw = urllib2.urlopen(url)
+        if self.timeout is not None:
+            raw = urllib2.urlopen(url, timeout=self.timeout)
+        else:
+            raw = urllib2.urlopen(url)
         html = raw.read()
         return self.parser(html)
         
