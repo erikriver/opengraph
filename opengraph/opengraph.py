@@ -1,7 +1,12 @@
 # encoding: utf-8
 
 import re
-import urllib2
+
+try:
+    import urllib2
+except ImportError:
+    from urllib import request as urllib2
+
 try:
     from bs4 import BeautifulSoup
 except ImportError:
@@ -59,7 +64,7 @@ class OpenGraph(dict):
         else:
             doc = html
         ogs = doc.html.head.findAll(property=re.compile(r'^og'))
-        for og in ogs:
+        for og in ogs: 
             if og.has_attr(u'content'):
                 self[og[u'property'][3:]]=og[u'content']
         # Couldn't fetch all attrs from og tags, try scraping body
@@ -72,7 +77,13 @@ class OpenGraph(dict):
                         pass
 
     def valid_attr(self, attr):
-        return hasattr(self, attr) and len(self[attr]) > 0
+        has_attr_result = False
+        try:
+            has_attr_result = hasattr(self, attr)
+        except Exception as e: 
+            has_attr_result = False
+            
+        return has_attr_result and len(self[attr]) > 0
 
     def is_valid(self):
         return all([self.valid_attr(attr) for attr in self.required_attrs])
