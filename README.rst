@@ -12,7 +12,7 @@ Features
 
 * Use it as a python dict
 * Input and parsing from a specific url
-* Input and parsung from html previous extracted
+* Input and parsing from html previous extracted
 * HTML output
 * JSON output
 
