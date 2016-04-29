@@ -47,9 +47,9 @@ class OpenGraph(dict):
     def fetch(self, url, user_agent):
         """
         """
-        req = urllib2.Request(url, data=None, headers={
-            'User-Agent': user_agent
-        })
+        req = urllib2.Request(url)
+        if user_agent:
+            req.add_header('User-agent', user_agent)
         raw = urllib2.urlopen(req)
         html = raw.read()
         return self.parser(html)
