@@ -1,7 +1,7 @@
 # encoding: utf-8
 
 import re
-import urllib2
+from urllib.request import urlopen
 try:
     from bs4 import BeautifulSoup
 except ImportError:
@@ -47,7 +47,7 @@ class OpenGraph(dict):
     def fetch(self, url):
         """
         """
-        raw = urllib2.urlopen(url)
+        raw = urlopen(url)
         html = raw.read()
         return self.parser(html)
         
