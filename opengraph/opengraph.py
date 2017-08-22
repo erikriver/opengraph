@@ -55,7 +55,7 @@ class OpenGraph(dict):
         """
         """
         if not isinstance(html,BeautifulSoup):
-            doc = BeautifulSoup(html)
+            doc = BeautifulSoup(html, 'html.parser')
         else:
             doc = html
         ogs = doc.html.head.findAll(property=re.compile(r'^og'))
