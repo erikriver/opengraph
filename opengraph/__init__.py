@@ -1,1 +1,1 @@
-from opengraph import OpenGraph
+from .opengraph import OpenGraph
