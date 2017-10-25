@@ -1,16 +1,12 @@
 # encoding: utf-8
 
 import re
+import requests
 
 try:
-    import urllib2
+    from bs4 import BeautifulSoup as soup
 except ImportError:
-    from urllib import request as urllib2
-
-try:
-    from bs4 import BeautifulSoup
-except ImportError:
-    from BeautifulSoup import BeautifulSoup
+    from BeautifulSoup import BeautifulSoup as soup
 
 global import_json
 try:
@@ -19,11 +15,16 @@ try:
 except ImportError:
     import_json = False
 
+
 class OpenGraph(dict):
     """
     """
 
+    # Required attributes from OG tags to be a valid set
     required_attrs = ['title', 'type', 'image', 'url', 'description']
+
+    # Further accepted params
+    optional_parameters = ['params','data','json','headers','cookies','auth','timeout','allow_redirects','proxies']
 
     def __init__(self, url=None, html=None, scrape=False, **kwargs):
         # If scrape == True, then will try to fetch missing attribtues
@@ -52,15 +53,23 @@ class OpenGraph(dict):
     def fetch(self, url):
         """
         """
-        raw = urllib2.urlopen(url)
-        html = raw.read()
+        additional_args = {}
+        for key in self.optional_parameters:
+            if hasattr(self, key):
+                additional_args[key] = self[key]
+
+        response = requests.get(url, **additional_args)
+        if response.status_code is not 200:
+            raise UnusableResponseError('Response status code unworkable [{}] {}'.format(response.status_code, response.reason))
+
+        html = soup(response.text, 'html.parser')
         return self.parser(html)
 
     def parser(self, html):
         """
         """
-        if not isinstance(html,BeautifulSoup):
-            doc = BeautifulSoup(html)
+        if not isinstance(html,soup):
+            doc = soup(html)
         else:
             doc = html
         ogs = doc.html.head.findAll(property=re.compile(r'^og'))
@@ -107,7 +116,8 @@ class OpenGraph(dict):
     def to_xml(self):
         pass
 
-    def scrape_image(self, doc):
+    @staticmethod
+    def scrape_image(doc):
         images = [dict(img.attrs)['src']
             for img in doc.html.body.findAll('img')]
 
@@ -116,16 +126,23 @@ class OpenGraph(dict):
 
         return u''
 
-    def scrape_title(self, doc):
+    @staticmethod
+    def scrape_title(doc):
         return doc.html.head.title.text
 
-    def scrape_type(self, doc):
+    @staticmethod
+    def scrape_type(doc):
         return 'other'
 
     def scrape_url(self, doc):
         return self._url
 
-    def scrape_description(self, doc):
+    @staticmethod
+    def scrape_description(doc):
         tag = doc.html.head.findAll('meta', attrs={"name":"description"})
         result = "".join([t['content'] for t in tag])
         return result
+
+
+class UnusableResponseError(Exception):
+    pass

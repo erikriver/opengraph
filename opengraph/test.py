@@ -21,7 +21,24 @@ class test(unittest.TestCase):
         data = opengraph.OpenGraph(url='https://vimeo.com/896837')
         self.assertEqual(data['url'], 'https://vimeo.com/896837')
 
-    def test_isinstace(self):
+    def test_custom_user_agent(self):
+        """
+        This server is fussy about the user agent; first demonstrate error response with usual user agent, then use a
+        custom agent and show it working.
+        :return:
+        """
+        with self.assertRaises(opengraph.UnusableResponseError):
+            data = opengraph.OpenGraph(
+                url='https://phys.org/news/2017-10-teams-independently-tomonagaluttinger-theory.html')
+
+        headers = {
+            'User-Agent': 'catalyst-og-retrieval-py'
+        }
+        data = opengraph.OpenGraph(
+            url='https://phys.org/news/2017-10-teams-independently-tomonagaluttinger-theory.html', headers=headers)
+        self.assertEqual(data['url'], 'https://phys.org/news/2017-10-teams-independently-tomonagaluttinger-theory.html')
+
+    def test_isinstance(self):
         data = opengraph.OpenGraph()
         self.assertTrue(isinstance(data,dict))
 
@@ -49,4 +66,4 @@ class test(unittest.TestCase):
 
 
 if __name__ == '__main__':
-	unittest.main()
+    unittest.main()
