@@ -66,9 +66,4 @@ class test(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    # try:
-    #     data = opengraph.OpenGraph(url='https://phys.org/news/2017-10-teams-independently-tomonagaluttinger-theory.html')
-    #     print "Data: {}".format(data)
-    # except opengraph.UnusableResponseError as ure:
-    #     print ure.message
     unittest.main()
