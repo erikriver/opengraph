@@ -97,7 +97,7 @@ class OpenGraph(dict):
         # TODO: force unicode
         global import_json
         if not import_json:
-            return "{'error':'there isn't json module'}"
+            return '{"error":"missing json module"}'
 
         if not self.is_valid():
             return json.dumps({'error':'og metadata is not valid'})
