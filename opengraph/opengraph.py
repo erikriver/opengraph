@@ -65,7 +65,7 @@ class OpenGraph(dict):
             doc = html
         ogs = doc.html.head.findAll(property=re.compile(r'^og'))
         for og in ogs:
-            if og.has_attr(u'content'):
+            if og.has_attr(u'content') and not self.get(og[u'property'][3:]):
                 self[og[u'property'][3:]]=og[u'content']
         # Couldn't fetch all attrs from og tags, try scraping body
         if not self.is_valid() and self.scrape:
