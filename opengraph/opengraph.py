@@ -52,7 +52,8 @@ class OpenGraph(dict):
     def fetch(self, url):
         """
         """
-        raw = urllib2.urlopen(url)
+        request = urllib2.Request(url, headers={"User-Agent" : "Mozilla"})
+        raw = urllib2.urlopen(req, timeout=15)
         html = raw.read()
         return self.parser(html)
 
