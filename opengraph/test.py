@@ -28,6 +28,7 @@ class test(unittest.TestCase):
     def test_to_html(self):
         og = opengraph.OpenGraph(html=HTML)
         self.assertTrue(og.to_html())
+        self.assertTrue(og.is_valid())
 
     def test_to_json(self):
         og = opengraph.OpenGraph(url='https://www.youtube.com/watch?v=XAyNT2bTFuI')

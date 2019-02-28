@@ -58,7 +58,7 @@ Usage
    ... """
    >>> movie = opengraph.OpenGraph() # or you can instantiate as follows: opengraph.OpenGraph(html=HTML)
    >>> movie.parser(HTML)
-   >>> video.is_valid()
+   >>> movie.is_valid()
    True
 
 **Generate JSON or HTML**

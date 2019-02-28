@@ -23,7 +23,7 @@ class OpenGraph(dict):
     """
     """
 
-    required_attrs = ['title', 'type', 'image', 'url', 'description']
+    required_attrs = ['title', 'type', 'image', 'url']
 
     def __init__(self, url=None, html=None, scrape=False, **kwargs):
         # If scrape == True, then will try to fetch missing attribtues
